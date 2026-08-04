@@ -1,9 +1,9 @@
 import validators
 import streamlit as st
 from langchain_groq import ChatGroq
-from langchain.prompts import PromptTemplate
-from langchain.chains.summarize import load_summarize_chain
-from langchain_community.document_loaders import YoutubeLoader,UnstructuredURLLoader
+from langchain_core.prompts import PromptTemplate
+from langchain.chains.summarize import load_summarize_chain  # Fixed this line
+from langchain_community.document_loaders import YoutubeLoader, UnstructuredURLLoader
 
 st.set_page_config(page_title='Langchain: Summarize Text From YT or Website ',page_icon="🦜")
 st.title("🦜 Langchian: Summarize Text From YT or Website")
