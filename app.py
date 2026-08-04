@@ -8,23 +8,19 @@ st.set_page_config(page_title='Langchain: Summarize Text From YT or Website ', p
 st.title("🦜 Langchain: Summarize Text From YT or Website")
 st.subheader("Summarize URL")
 
-# FIX 1: Changed st.slider to st.sidebar
 with st.sidebar:
     groq_api_key = st.text_input("GROQ API Key", value="", type='password')
 
 generic_url = st.text_input("URL", label_visibility="collapsed")
-
-# FIX 2: Modern model name parameter (model_name -> model)
-llm = ChatGroq(model='llama-3.1-8b-instant', groq_api_key=groq_api_key)
 
 promt_template = """
 Provide a summary of the following content in 300 words:
 Content:{text}
 """
 
-# FIX 3: Fixed parameter name from input_variable to input_variables
 prompt = PromptTemplate(template=promt_template, input_variables=['text'])
 
+# The initialization must happen BELOW this button check line!
 if st.button("Summarize the content from YT or Website"):
     if not groq_api_key.strip() or not generic_url.strip():
         st.error("Please Provide the information to get started")
@@ -33,6 +29,9 @@ if st.button("Summarize the content from YT or Website"):
     else:
         try:
             with st.spinner("Waiting..."):
+                # SAFELY INITIALIZED HERE: Only runs after key validation checks pass
+                llm = ChatGroq(model='llama-3.1-8b-instant', groq_api_key=groq_api_key.strip())
+
                 if 'youtube.com' in generic_url or 'youtu.be' in generic_url:
                     loader = YoutubeLoader.from_youtube_url(generic_url, add_video_info=True)
                 else:
@@ -43,12 +42,10 @@ if st.button("Summarize the content from YT or Website"):
                     )
                 docs = loader.load()
 
-                # FIX 4: Replaced load_summarize_chain with a modern LCEL chain pipeline
                 combined_text = "\n".join([doc.page_content for doc in docs])
                 chain = prompt | llm
                 response = chain.invoke({"text": combined_text})
 
-                # FIX 5: Output the text content cleanly
                 st.success(response.content)
         except Exception as e:
             st.exception(f"Exception: {e}")
