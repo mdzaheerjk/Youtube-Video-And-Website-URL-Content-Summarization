@@ -1,5 +1,7 @@
 validators
 streamlit
-langchain
+langchain-core
 langchain-groq
 langchain-community
+youtube-transcript-api
+pytube
